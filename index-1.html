@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="theme-color" content="#22c55e">
+<title>القصابي - Abdelhak</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3efe6;font-family:Tahoma,Arial;color:#222;user-select:none}
+.app{max-width:420px;margin:auto;background:#f3efe6;min-height:100vh;padding-bottom:70px;position:relative}
+.top{padding:12px;text-align:center;background:#1a1a1a;color:#fff;font-size:17px;font-weight:bold}
+.daybox{text-align:center;padding:10px;background:#fff;margin:10px;border-radius:15px}
+.hijri{color:#1a8fb0;font-weight:bold}.miladi{color:#777;font-size:12px}
+.bar{background:#222;color:#fff;margin:10px;padding:10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.bar button{border:0;padding:7px 12px;border-radius:15px;font-weight:bold}.btn-on{background:#22c55e}.btn-off{background:#ef4444;color:#fff}
+.row{padding:14px;background:#fff;margin:4px 10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.row.next{border:2px solid #22c55e;background:#e9e1c8}
+.ic{font-size:20px;cursor:pointer;width:30px}
+.popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#111;color:#fff;padding:20px;border-radius:20px;text-align:center;display:none;z-index:99;width:85%}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;border-top:1px solid #ddd;display:flex;justify-content:space-around;padding:6px 0;z-index:10}
+.bottom div{cursor:pointer;text-align:center;font-size:11px;padding:4px;color:#888}
+.bottom .active{color:#1a1a1a;font-weight:bold}
+.section{display:none}.section.active{display:block}
+.box{background:#fff;margin:10px;border-radius:18px;padding:15px}
+.compass{width:200px;height:200px;border:6px solid #222;border-radius:50%;margin:15px auto;position:relative;background:#f9f5e9}
+.compass-arrow{position:absolute;top:50%;left:50%;width:4px;height:90px;background:#ef4444;transform-origin:bottom center;transform:translate(-50%,-100%) rotate(0deg);transition:transform 0.3s}
+.compass-center{position:absolute;top:50%;left:50%;width:20px;height:20px;background:#222;border-radius:50%;transform:translate(-50%,-50%)}
+.kaaba{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:22px}
+.counter{font-size:70px;font-weight:bold;color:#1a1a1a;margin:5px;text-align:center}
+.circle-btn{width:170px;height:170px;border-radius:50%;background:#22c55e;border:0;font-size:26px;font-weight:bold;box-shadow:0 7px 0 #15803d;cursor:pointer;margin:15px auto;display:block}
+.circle-btn:active{transform:translateY(7px);box-shadow:0 0 0 #15803d}
+.welcome{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:100vh;background:linear-gradient(180deg,#0f3d1f,#1a1a1a);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:1000;padding:20px}
+.welcome h1{font-size:34px;margin:10px 0;color:#22c55e}
+.welcome button{margin-top:25px;background:#22c55e;color:#000;border:0;padding:14px 35px;border-radius:30px;font-size:18px;font-weight:bold;cursor:pointer}
+.match-card{background:linear-gradient(135deg,#e9f5e9,#fff);border:2px solid #22c55e;padding:14px;border-radius:15px;margin:10px 0}
+.vs{width:50px;height:50px;background:#fff;border:2px solid #ef4444;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;color:#ef4444}
+</style>
+</head>
+<body>
+
+<div class="welcome" id="welcome">
+<div style="font-size:70px">🕌</div>
+<h1>مرحبا</h1>
+<p style="font-size:19px;line-height:1.5">مبرمج هذا التطبيق هو<br><b style="font-size:28px;color:#22c55e">Abdelhak</b><br><br>تطبيق القصابي الشامل<br>🕐 صلاة - 🧭 قبلة - 📿 تسبيح - ⚽ مباريات</p>
+<button onclick="enterApp()">دخول للتطبيق 🚀</button>
+<div style="margin-top:20px;font-size:11px;color:#aaa">Ksabi Moulouya - 2026 - يعمل بدون انترنت</div>
+</div>
+
+<div class="app">
+<div class="top">🕌 القصابي - Abdelhak</div>
+
+<!-- 1- الصلاة -->
+<div id="sec-salat" class="section active">
+<div class="daybox">
+<div style="display:flex;justify-content:space-between"><button onclick="changeDay(-1)">&lt;</button><b id="dayName">الخميس</b><button onclick="changeDay(1)">&gt;</button></div>
+<div class="hijri" id="hijri"></div><div class="miladi" id="miladi"></div><div style="font-size:11px;color:#999" id="nextInfo"></div>
+</div>
+<div class="bar"><span>🔊 الأذان: <b id="adanTxt">مفعل</b></span><div><button class="btn-on" id="btnAdan" onclick="toggleAdan()">اطفاء</button><button style="background:#444;color:#fff;border:0;padding:7px 10px;border-radius:15px" onclick="testAdan()">جرب</button></div></div>
+<div id="list"></div>
+</div>
+
+<!-- 2- القبلة -->
+<div id="sec-qibla" class="section">
+<div class="box" style="text-align:center">
+<h3>🧭 اتجاه القبلة - القصابي</h3>
+<p style="font-size:12px;color:#666">وجه الهاتف و دور حتى يتطابق السهم مع الكعبة</p>
+<div class="compass"><div class="kaaba">🕋</div><div class="compass-arrow" id="arrow"></div><div class="compass-center"></div></div>
+<div id="qiblaInfo" style="font-weight:bold">القبلة: 94° شرق الجنوب</div>
+<div id="qiblaDeg" style="font-size:12px;color:#888">اضغط تفعيل</div>
+<button onclick="startQibla()" id="qiblaBtn" style="background:#222;color:#fff;border:0;padding:10px 20px;border-radius:20px;margin-top:10px">تفعيل البوصلة 🧭</button>
+</div>
+</div>
+
+<!-- 3- التسبيح -->
+<div id="sec-tasbih" class="section">
+<div class="box" style="text-align:center">
+<h3>📿 التسبيح</h3>
+<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap"><button onclick="setZikr('سبحان الله')" style="background:#eee;border:0;padding:6px 10px;border-radius:10px">سبحان الله</button><button onclick="setZikr('الحمد لله')" style="background:#eee;border:0;padding:6px 10px;border-radius:10px">الحمد لله</button><button onclick="setZikr('الله أكبر')" style="background:#eee;border:0;padding:6px 10px;border-radius:10px">الله أكبر</button><button onclick="setZikr('لا إله إلا الله')" style="background:#eee;border:0;padding:6px 10px;border-radius:10px">لا إله إلا الله</button></div>
+<div id="zikrText" style="font-size:18px;color:#1a8fb0;margin-top:10px">سبحان الله</div>
+<div class="counter" id="tasbihCount">0</div>
+<div style="font-size:13px">الهدف: <span id="tasbihGoal">33</span></div>
+<div style="width:100%;background:#eee;height:8px;border-radius:10px;margin:8px 0"><div id="tasbihBar" style="width:0%;background:#22c55e;height:8px;border-radius:10px;transition:width 0.3s"></div></div>
+<button class="circle-btn" onclick="doTasbih()">سَبِّحْ</button>
+<div style="display:flex;justify-content:center;gap:10px"><button onclick="resetTasbih()" style="background:#ef4444;color:#fff;border:0;padding:8px 15px;border-radius:15px">تصفير ↺</button><button onclick="changeGoal()" style="background:#222;color:#fff;border:0;padding:8px 15px;border-radius:15px">33/99/100</button></div>
+</div>
+</div>
+
+<!-- 4- المباريات -->
+<div id="sec-matches" class="section">
+<div class="box">
+<h3>⚽ مباريات أسود الأطلس</h3>
+<div class="match-card">
+<div style="display:flex;justify-content:space-around;align-items:center">
+<div style="text-align:center"><div style="font-size:40px">🇲🇦</div><b>المغرب</b></div>
+<div class="vs">VS</div>
+<div style="text-align:center"><div style="font-size:40px">🇳🇪</div><b>النيجر</b><div style="font-size:10px;color:#666">النيجر (دولة فإفريقيا)</div></div>
+</div>
+<div style="margin-top:12px;font-size:13px;background:#fff;padding:8px;border-radius:10px">
+📅 <b>13 نونبر 2026 - 21:00</b><br>
+🏟️ ملعب محمد الخامس - الدار البيضاء<br>
+🏆 تصفيات كأس إفريقيا 2027 - الجولة 5
+</div>
+<button onclick="alert('تم تفعيل التذكير! غادي نعلمك قبل الماتش بساعة ⏰')" style="width:100%;background:#22c55e;border:0;padding:10px;border-radius:12px;margin-top:10px;font-weight:bold">⏰ تذكير قبل المباراة</button>
+</div>
+
+<div style="background:#f5f5f5;padding:12px;border-radius:15px;margin-top:10px">
+<div style="display:flex;justify-content:space-between"><b>المباراة القادمة</b><span style="font-size:11px;background:#222;color:#fff;padding:2px 8px;border-radius:10px">بعد 4 أيام</span></div>
+<div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+<span>🇳🇪 النيجر vs المغرب 🇲🇦</span><span style="font-size:12px;color:#666">18 نونبر - 20:30<br>نيامي</span>
+</div>
+</div>
+
+<div style="background:#fff3cd;padding:10px;border-radius:12px;margin-top:10px;font-size:12px">
+💡 <b>النيجر ماشي هي نيجيريا:</b><br>
+النيجر 🇳🇪 دولة صغيرة (27 مليون) - ترتيب 120<br>
+نيجيريا 🇳🇬 دولة كبيرة (230 مليون) - ترتيب 40
+</div>
+</div>
+</div>
+
+<div class="bottom">
+<div id="b-salat" class="active" onclick="showSec('salat')">🕐<br>الصلاة</div>
+<div id="b-qibla" onclick="showSec('qibla')">🧭<br>القبلة</div>
+<div id="b-tasbih" onclick="showSec('tasbih')">📿<br>تسبيح</div>
+<div id="b-matches" onclick="showSec('matches')">⚽<br>مباريات</div>
+</div>
+</div>
+
+<div class="popup" id="popup"><div style="font-size:50px">🕌</div><div style="font-size:18px;font-weight:bold" id="popupText"></div><button onclick="stopAdan()" style="background:#22c55e;border:0;padding:8px 20px;border-radius:15px;margin-top:10px">ايقاف ⏹️</button></div>
+<audio id="audio" loop><source src="https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3" type="audio/mpeg"></audio>
+
+<script>
+function enterApp(){document.getElementById('welcome').style.display='none'; try{localStorage.setItem('ksabi_welcomed','1');}catch(e){}}
+try{if(localStorage.getItem('ksabi_welcomed')==='1'){document.getElementById('welcome').style.display='none';}}catch(e){}
+var baseTimes=[310,391,726,901,1052,1122];
+var names=["الفجر","الشروق","الظهر","العصر","المغرب","العشاء"];
+var days=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+var curDate=new Date(2026,10,5);
+var muted=[0,1,0,0,0,0];
+var adanOn=true; var lastAdan="";
+try{if(localStorage.getItem("ksabi_muted")) muted=JSON.parse(localStorage.getItem("ksabi_muted")); if(localStorage.getItem("ksabi_adan")!==null) adanOn=localStorage.getItem("ksabi_adan")==="1";}catch(e){}
+function save(){try{localStorage.setItem("ksabi_muted",JSON.stringify(muted)); localStorage.setItem("ksabi_adan",adanOn?"1":"0");}catch(e){}}
+function showSec(s){document.querySelectorAll('.section').forEach(function(e){e.classList.remove('active')}); document.getElementById('sec-'+s).classList.add('active'); document.querySelectorAll('.bottom div').forEach(function(e){e.classList.remove('active')}); var b=document.getElementById('b-'+s); if(b) b.classList.add('active');}
+function changeDay(d){curDate.setDate(curDate.getDate()+d); render();}
+function mute(i){muted[i]=!muted[i]; save(); render();}
+function toggleAdan(){adanOn=!adanOn; save(); updateBar(); if(!adanOn) stopAdan();}
+function updateBar(){var t=document.getElementById("adanTxt"); var b=document.getElementById("btnAdan"); if(!t) return; if(adanOn){t.innerHTML="مفعل"; b.innerHTML="اطفاء"; b.className="btn-on";}else{t.innerHTML="مطفي"; b.innerHTML="تشغيل"; b.className="btn-off";}}
+function playBeep(){try{var ctx=new (window.AudioContext||window.webkitAudioContext)(); var o=ctx.createOscillator(); var g=ctx.createGain(); o.frequency.value=650; o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(0.5,ctx.currentTime); o.start(); setTimeout(function(){o.stop();},800);}catch(e){}}
+function testAdan(){document.getElementById("popupText").innerHTML="هذا صوت الأذان - Test"; document.getElementById("popup").style.display="block"; var a=document.getElementById("audio"); a.currentTime=0; a.play().catch(function(){playBeep();}); if("vibrate" in navigator) navigator.vibrate([400,100,400]);}
+function stopAdan(){document.getElementById("popup").style.display="none"; try{document.getElementById("audio").pause();}catch(e){}}
+function render(){var diff=Math.floor((curDate-new Date(2026,10,5))/86400000); var now=new Date(); var nowMin=now.getHours()*60+now.getMinutes(); var html=""; var next=-1; var nextName=""; for(var i=0;i<6;i++){var t=baseTimes[i]+diff; var h=Math.floor(t/60); var m=t%60; var ap="ص"; if(h>=12){ap="م"; if(h>12)h-=12;} if(h==0)h=12; var hs=h<10?"0"+h:h; var ms=m<10?"0"+m:m; var isNext=false; if(curDate.toDateString()===now.toDateString()){if(t>nowMin && next===-1){next=i; nextName=names[i]; isNext=true;} if(t===nowMin && adanOn && !muted[i]){var key=curDate.toDateString()+"-"+i; if(lastAdan!==key){lastAdan=key; document.getElementById("popupText").innerHTML="حان وقت صلاة "+names[i]; document.getElementById("popup").style.display="block"; var aud=document.getElementById("audio"); try{aud.currentTime=0; aud.play().catch(function(){playBeep();});}catch(e){playBeep();} if("vibrate" in navigator) navigator.vibrate([800,200,800]);}}} var ic=muted[i]?"🔇":"🔊"; html+='<div class="row '+(isNext?'next':'')+'"><span class="ic" onclick="mute('+i+')">'+ic+'</span><span>'+hs+':'+ms+' '+ap+'</span><b>'+names[i]+'</b></div>';} document.getElementById("list").innerHTML=html; document.getElementById("dayName").innerHTML=days[curDate.getDay()]; document.getElementById("miladi").innerHTML=curDate.getDate()+" نونبر "+curDate.getFullYear(); document.getElementById("hijri").innerHTML=(24+diff)+" جمادى الأولى 1448"; if(nextName) document.getElementById("nextInfo").innerHTML="القادمة: "+nextName; updateBar();}
+function startQibla(){if(typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent.requestPermission==="function"){DeviceOrientationEvent.requestPermission().then(function(s){if(s==="granted"){window.addEventListener("deviceorientation",handleOrient,true); document.getElementById("qiblaBtn").innerHTML="مفعلة ✅";}}).catch(function(){});}else{window.addEventListener("deviceorientation",handleOrient,true); document.getElementById("qiblaBtn").innerHTML="مفعلة ✅ - دور الهاتف";}}
+function handleOrient(e){var alpha=e.webkitCompassHeading||e.alpha; if(alpha===null) return; var qibla=94; var rot=qibla-alpha; document.getElementById("arrow").style.transform="translate(-50%,-100%) rotate("+rot+"deg)"; document.getElementById("qiblaDeg").innerHTML="اتجاهك: "+Math.round(alpha)+"°"; if(Math.abs(rot)<10){document.getElementById("qiblaInfo").innerHTML="✅ أنت متجه للقبلة"; document.getElementById("qiblaInfo").style.color="#22c55e";}else{document.getElementById("qiblaInfo").innerHTML="دور حتى يتطابق السهم مع 🕋"; document.getElementById("qiblaInfo").style.color="#222";}}
+var tasCount=0; var tasGoal=33; try{if(localStorage.getItem("tasCount")) tasCount=parseInt(localStorage.getItem("tasCount")); if(localStorage.getItem("tasGoal")) tasGoal=parseInt(localStorage.getItem("tasGoal"));}catch(e){}
+function updateTas(){document.getElementById("tasbihCount").innerHTML=tasCount; document.getElementById("tasbihGoal").innerHTML=tasGoal; document.getElementById("tasbihBar").style.width=Math.min(100,(tasCount/tasGoal)*100)+"%"; try{localStorage.setItem("tasCount",tasCount); localStorage.setItem("tasGoal",tasGoal);}catch(e){} if(tasCount>0 && tasCount%tasGoal===0) playBeep();}
+function doTasbih(){tasCount++; updateTas(); if("vibrate" in navigator) navigator.vibrate(50);}
+function resetTasbih(){tasCount=0; updateTas();}
+function changeGoal(){if(tasGoal===33)tasGoal=99; else if(tasGoal===99)tasGoal=100; else tasGoal=33; updateTas();}
+function setZikr(z){document.getElementById("zikrText").innerHTML=z; tasCount=0; updateTas();}
+updateTas(); render(); setInterval(render,30000);
+</script>
+</body>
+</html>
